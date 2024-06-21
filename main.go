@@ -36,21 +36,9 @@ type Player struct {
 }
 
 func (die Die) GetColoredDie(roll int) string {
-	switch roll {
-	case 1:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚀")
-	case 2:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚁")
-	case 3:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚂")
-	case 4:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚃")
-	case 5:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚄")
-	case 6:
-		return fmt.Sprintf("\x1b[%dm%s\x1b[0m", die.Color, "⚅")
-	}
-	return ""
+	const colorStr = "\x1b[%dm%s\x1b[0m" //ANSI color codes for the color and reset
+	diceFaces := []string{"⚀", "⚁", "⚂", "⚃", "⚄", "⚅"}
+	return fmt.Sprintf(colorStr, die.Color, diceFaces[roll-1])
 }
 
 func main() {

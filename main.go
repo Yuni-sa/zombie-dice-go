@@ -7,14 +7,21 @@ import (
 )
 
 type Die struct {
-	Lose int
-	Win  int
+	Color int
+	Lose  int
+	Win   int
 }
 
+const (
+	Brain     = "brain🧠"
+	Shotgun   = "shotgun⌖"
+	Footprint = "footprint👣"
+)
+
 var (
-	greenDie  = Die{Lose: 1, Win: 3}
-	yellowDie = Die{Lose: 2, Win: 4}
-	redDie    = Die{Lose: 3, Win: 5}
+	greenDie  = Die{Color: 32, Lose: 1, Win: 3}
+	yellowDie = Die{Color: 33, Lose: 2, Win: 4}
+	redDie    = Die{Color: 31, Lose: 3, Win: 5}
 	emptyDie  = Die{}
 )
 
@@ -26,6 +33,12 @@ type Brains struct {
 type Player struct {
 	ID    int
 	Score int
+}
+
+func (die Die) GetColoredDie(roll int) string {
+	const colorStr = "\x1b[%dm%s\x1b[0m" //ANSI color codes for the color and reset
+	diceFaces := []string{"⚀", "⚁", "⚂", "⚃", "⚄", "⚅"}
+	return fmt.Sprintf(colorStr, die.Color, diceFaces[roll-1])
 }
 
 func main() {
@@ -168,25 +181,25 @@ func drawRandomDice(drawnDice *[3]Die, bag *[]Die) {
 func rollDice(die Die) (int, string) {
 	face := rand.IntN(6) + 1
 	if face <= die.Lose {
-		return face, "shotgun"
+		return face, Shotgun
 	}
 	if face <= die.Win {
-		return face, "footprint"
+		return face, Footprint
 	}
-	return face, "brain"
+	return face, Brain
 }
 
 func manageDice(drawnDice *[3]Die, brains *Brains, shotguns *int) {
 	for i, die := range *drawnDice {
 		roll, result := rollDice(die)
-		fmt.Printf("%v: %v = %v\n", die, roll, result)
+		fmt.Printf("%v = %v\n", die.GetColoredDie(roll), result)
 
 		switch result {
-		case "brain":
+		case Brain:
 			brains.Points++
 			brains.Dice = append(brains.Dice, die)
 			(*drawnDice)[i] = emptyDie
-		case "shotgun":
+		case Shotgun:
 			(*drawnDice)[i] = emptyDie
 			(*shotguns)++
 		}
